@@ -520,7 +520,7 @@
         <li><strong>DA After Revision</strong>: 31% DA existing on 01.07.2024 is merged into basic via fitment. New DA = Current DA − 31% (e.g. 35% − 31% = 4%)</li>
         <li><strong>SLI</strong> = 1.5% of Basic Pay (actual premium may vary; minimum shown)</li>
         <li><strong>GIS</strong> = max(₹800, 1.5% of Basic Pay) — Group Insurance Scheme</li>
-        <li><strong>MEDISEP</strong> = ₹589/month fixed (employee contribution)</li>
+        <li><strong>MEDISEP</strong> = ₹689/month fixed (employee contribution)</li>
         <li><strong>GPF (General Provident Fund)</strong> = Compulsory for ALL employees. If no input given: 6% of Basic Pay. If old contribution entered and it was ≥ 6% of old basic: new GPF = max(old amount, 6% of new basic) — never less than old contribution. If old contribution was &lt; 6% of old basic: fresh 6% of new basic applied.</li>
         <li><strong>NPS (New Pension Scheme)</strong> = 10% of (Basic + DA) — deducted additionally if employee is under NPS. Government contributes 14% separately</li>
         <li><strong>Rounding</strong>: Basic Pay and increments are rounded to nearest ₹100 (pay scale convention). DA, HRA, SLI, GIS, NPS amounts are rounded up to the next rupee (ceiling), not to the nearest ₹100.</li>
@@ -617,7 +617,7 @@ function calcCurrent(basicBase, incr, daP, hraR, sliOverride, gpfOverride){
   const sliMin  = rup(basic * 0.015);
   const sli     = sliOverride ? Math.max(sliOverride, sliMin) : sliMin;
   const gis     = Math.max(800, rup(basic * 0.015));
-  const medisep = 589;
+  const medisep = 689;
 
   const gpf6pct = rup(basic * 0.06);
   const gpf     = gpfOverride ? Math.max(gpfOverride, gpf6pct) : gpf6pct;
@@ -647,7 +647,7 @@ function calcRevised(basicBase, incr, revDAP, hraR, fitment, sliOverride, gpfOve
   const sliMin  = rup(rb * 0.015);          // ceil to next rupee
   const sli     = sliOverride ? Math.max(sliOverride, sliMin) : sliMin;
   const gis     = Math.max(800, rup(rb * 0.015));   // ceil, min 800
-  const medisep = 589;
+  const medisep = 689;
 
   // GPF revised logic:
   //   Case 1 – No override: new GPF = 6% of new basic (standard minimum)
