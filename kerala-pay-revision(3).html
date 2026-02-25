@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kerala Pay Revision Calculator – 12th PRC Estimator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Noto+Serif:wght@400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-dark:  #002f6c;
+    --blue-mid:   #00509e;
+    --blue-light: #e8f2ff;
+    --green-dark: #00451a;
+    --green-mid:  #006633;
+    --green-light:#e6f7ec;
+    --amber:      #c07800;
+    --amber-light:#fff8e1;
+    --red-dark:   #8b0000;
+    --red-light:  #fff5f5;
+    --border:     #ccddef;
+    --text:       #1a2e45;
+    --muted:      #5a7a9a;
+    --bg:         #f0f4f8;
+    --white:      #ffffff;
+  }
+
+  body {
+    font-family: 'Noto Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 48px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #002f6c 0%, #00509e 60%, #0070cc 100%);
+    color: #fff;
+    padding: 20px 24px 16px;
+    box-shadow: 0 3px 20px rgba(0,47,108,.4);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header-icon { font-size: 40px; line-height: 1; }
+  .header-sub  { font-size: 11px; letter-spacing: 3px; opacity: .7; text-transform: uppercase; margin-bottom: 3px; }
+  .header-title{ font-family: 'Noto Serif', serif; font-size: clamp(16px,3.5vw,23px); font-weight: 700; margin-bottom: 6px; }
+  .badges      { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 600; border-radius: 20px;
+    padding: 3px 12px; border: 1px solid; letter-spacing: .5px;
+  }
+  .badge-gold  { background: rgba(255,200,60,.15); border-color: rgba(255,200,60,.5); color: #ffe066; }
+  .badge-green { background: rgba(80,255,140,.1);  border-color: rgba(80,255,140,.4); color: #aaffc8; }
+  .badge-warn  { background: rgba(255,140,60,.12); border-color: rgba(255,140,60,.45);color: #ffcb99; }
+
+  /* ── MAIN ── */
+  .main { max-width: 1100px; margin: 24px auto 0; padding: 0 16px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 2px 18px rgba(0,51,102,.07);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .section-head {
+    font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--blue-mid);
+    border-bottom: 2px solid #e0eaf8;
+    padding-bottom: 8px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ── GRID ── */
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+
+  /* ── FORM ELEMENTS ── */
+  label.lbl {
+    display: block; font-size: 11px; font-weight: 700;
+    color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px;
+  }
+  input[type=number], select {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-weight: 600; color: var(--text);
+    background: #f7fbff; outline: none;
+    font-family: 'Noto Sans', sans-serif;
+    transition: border-color .2s;
+  }
+  input[type=number]:focus, select:focus { border-color: var(--blue-mid); }
+  input[type=range] { width: 100%; accent-color: var(--blue-mid); cursor: pointer; height: 6px; }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── TOGGLE BUTTONS ── */
+  .toggle-row { display: flex; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--border); }
+  .toggle-btn {
+    flex: 1; padding: 9px 0; border: none; cursor: pointer;
+    font-weight: 700; font-size: 13px; font-family: 'Noto Sans', sans-serif;
+    transition: all .15s;
+    background: #f7fbff; color: var(--muted);
+  }
+  .toggle-btn.active { background: var(--blue-dark); color: #fff; }
+  .toggle-btn.active-green { background: var(--green-dark); color: #fff; }
+
+  /* ── INCREMENT BUTTONS ── */
+  .incr-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .incr-btn {
+    width: 44px; height: 44px; border-radius: 8px;
+    border: 2px solid var(--border);
+    background: #f7fbff; color: var(--muted);
+    font-weight: 700; font-size: 16px; cursor: pointer;
+    transition: all .15s;
+  }
+  .incr-btn.active { background: var(--blue-dark); color: #fff; border-color: var(--blue-dark); }
+
+  /* ── FITMENT GRID ── */
+  .fitment-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .fitment-btn {
+    padding: 10px 8px; border-radius: 8px; border: 2px solid var(--border);
+    background: #f7fbff; color: var(--text); cursor: pointer;
+    font-size: 12px; font-weight: 500; font-family: 'Noto Sans', sans-serif;
+    text-align: center; transition: all .15s;
+  }
+  .fitment-btn.active { background: var(--green-mid); color: #fff; border-color: var(--green-mid); font-weight: 700; }
+
+  /* ── SUMMARY BOXES ── */
+  .summary-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  .summary-box {
+    border-radius: 12px; padding: 18px 16px; color: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+  }
+  .sb-blue  { background: linear-gradient(135deg, #002f6c, #00509e); }
+  .sb-green { background: linear-gradient(135deg, #00451a, #006633); }
+  .sb-title { font-size: 11px; letter-spacing: 2px; opacity: .75; text-transform: uppercase; margin-bottom: 3px; }
+  .sb-sub   { font-size: 10px; opacity: .6; margin-bottom: 10px; }
+  .sb-grid  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .sb-cell  { background: rgba(255,255,255,.12); border-radius: 8px; padding: 8px 6px; text-align: center; }
+  .sb-cell-lbl { font-size: 10px; opacity: .7; margin-bottom: 3px; letter-spacing: .4px; }
+  .sb-cell-val { font-size: clamp(12px,2vw,16px); font-weight: 800; }
+  .c-blue  { color: #aad4ff; }
+  .c-red   { color: #ffaaaa; }
+  .c-green { color: #aaff99; }
+
+  /* ── HIKE BANNER ── */
+  .hike-banner {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border: 1.5px solid #81c784;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .hike-item { text-align: center; min-width: 120px; }
+  .hike-lbl  { font-size: 10px; color: #3a6a3a; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+  .hike-val  { font-size: clamp(18px,3vw,26px); font-weight: 800; color: #1b5e20; }
+  .hike-sub  { font-size: 11px; color: #4a8a4a; }
+
+  /* ── TABLE ── */
+  .pay-table { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 12px; }
+  .pay-table th {
+    background: #eef3fa; padding: 10px 10px;
+    text-align: right; font-size: 11px; font-weight: 700;
+    color: var(--blue-mid); border-bottom: 2px solid var(--border);
+  }
+  .pay-table th:first-child { text-align: left; }
+  .pay-table td { padding: 8px 10px; border-bottom: 1px solid #f0f4f8; }
+  .pay-table td:not(:first-child) { text-align: right; font-weight: 600; }
+  .row-alt  { background: #fafcff; }
+  .row-head { background: #f0f7ff; }
+  .row-head td { font-size: 11px; font-weight: 700; color: #005099; letter-spacing: 1px; text-transform: uppercase; padding: 7px 10px; }
+  .row-ded-head { background: #fff5f5; }
+  .row-ded-head td { font-size: 11px; font-weight: 700; color: #aa2200; letter-spacing: 1px; text-transform: uppercase; padding: 7px 10px; }
+  .row-subtotal td { background: #eef3fa; font-weight: 700; font-size: 13px; color: var(--blue-dark); border-top: 2px solid var(--border); border-bottom: 2px solid var(--border); }
+  .row-ded-total td { background: #fff0ee; font-weight: 700; font-size: 13px; color: #aa2200; border-top: 1px solid #e8c5c5; border-bottom: 2px solid #e8c5c5; }
+  .row-net td { background: linear-gradient(90deg, #e8f5e9, #c8e6c9 60%, #e8f5e9); font-weight: 800; font-size: 14px; color: var(--blue-dark); }
+  .col-curr  { color: var(--blue-dark); }
+  .col-rev   { color: var(--green-dark); }
+  .col-diff  { color: #c05000; }
+  .col-ded-curr { color: #aa2200; }
+  .col-ded-rev  { color: #aa4400; }
+  .col-ded-diff { color: #663300; }
+
+  /* ── SCENARIO CARDS ── */
+  .scenario-card {
+    border-radius: 10px; padding: 14px;
+    border: 2px solid var(--border);
+    background: #f7fbff; cursor: pointer;
+    transition: all .15s;
+  }
+  .scenario-card.active {
+    border-color: var(--green-mid);
+    background: linear-gradient(135deg, #e8f5e9, #f0fff4);
+    box-shadow: 0 2px 12px rgba(0,100,50,.15);
+  }
+  .sc-title { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+  .sc-title.active { color: var(--green-mid); }
+  .sc-basic { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+  .sc-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .sc-cell  { background: rgba(0,0,0,.04); border-radius: 6px; padding: 6px 7px; }
+  .sc-lbl   { font-size: 9px; color: #8aa; text-transform: uppercase; letter-spacing: .5px; }
+  .sc-val   { font-size: 12px; font-weight: 700; color: var(--text); }
+  .sc-val.active { color: var(--green-mid); }
+
+  /* ── NOTES ── */
+  .notes-card { background: var(--amber-light); border: 1px solid #ffe082; }
+  .notes-card .section-head { color: #8b6000; border-color: #ffe082; }
+  .notes-card ul { font-size: 12px; color: #5a4000; line-height: 2; padding-left: 20px; }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 48px 20px; color: var(--muted); }
+  .empty-icon { font-size: 52px; margin-bottom: 12px; }
+  .empty-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; }
+
+  /* ── RANGE DISPLAY ── */
+  .range-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .range-val {
+    min-width: 52px; text-align: center;
+    border-radius: 6px; padding: 4px 8px;
+    font-weight: 700; font-size: 14px; color: #fff;
+  }
+  .rv-blue  { background: var(--blue-dark); }
+  .rv-green { background: var(--green-mid); }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: var(--blue-light); border: 1px solid #b3cef0;
+    border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #1a3a6a;
+    margin-top: 8px;
+  }
+
+  footer {
+    text-align: center; padding: 20px 20px 0;
+    font-size: 11px; color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    .summary-wrap { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .hike-banner { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-icon">🏛️</div>
+    <div>
+      <div class="header-sub">Government of Kerala · Finance Department</div>
+      <div class="header-title">Pay Revision Estimator — 12th PRC</div>
+      <div class="badges">
+        <span class="badge badge-gold">11th PRC Baseline</span>
+        <span class="badge badge-green">12th PRC Estimated (w.e.f. 01.07.2024)</span>
+        <span class="badge badge-warn">⚠ Unofficial Estimate</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- INPUT SECTION -->
+  <div class="grid-3">
+
+    <!-- Card 1: Pay Details -->
+    <div class="card">
+      <div class="section-head">💰 Pay Details (as on 01.07.2024)</div>
+
+      <label class="lbl">Basic Pay as on 01.07.2024 (₹)</label>
+      <input type="number" id="basicPay" placeholder="e.g. 45600" oninput="recalc()" />
+      <div class="hint">This is the base for all pay revision calculations</div>
+      <br>
+
+      <label class="lbl">Increments Received AFTER 01.07.2024</label>
+      <div class="incr-row" id="incrBtns"></div>
+      <div class="hint" id="incrHint">Increments added to both current basic and revised basic</div>
+
+      <div class="info-box" id="incrInfo" style="display:none"></div>
+    </div>
+
+    <!-- Card 2: Allowances -->
+    <div class="card">
+      <div class="section-head">📊 Allowance Rates</div>
+
+      <label class="lbl">Current DA % (as on today)</label>
+      <div class="range-wrap">
+        <input type="range" id="daSlider" min="0" max="80" value="35" oninput="syncDA(this.value)">
+        <div class="range-val rv-blue" id="daVal">35%</div>
+      </div>
+      <div class="hint" style="margin-bottom:14px">Current DA on 11th PRC pay scales (Kerala DA rate)</div>
+
+      <!-- Auto DA calculation box -->
+      <div style="background:#e8f5e9;border:1px solid #81c784;border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:700;color:#2e7d32;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+          🔄 DA After Revision (Auto-Calculated)
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+          <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:8px 4px;">
+            <div style="font-size:9px;color:#558b2f;text-transform:uppercase;letter-spacing:0.5px;">DA Merged<br>(01.07.2024)</div>
+            <div style="font-size:18px;font-weight:800;color:#1b5e20;">31%</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:8px 4px;">
+            <div style="font-size:9px;color:#558b2f;text-transform:uppercase;letter-spacing:0.5px;">Current DA<br>(Today)</div>
+            <div style="font-size:18px;font-weight:800;color:#1b5e20;" id="curDAshow">35%</div>
+          </div>
+          <div style="background:#1b5e20;border-radius:8px;padding:8px 4px;">
+            <div style="font-size:9px;color:#a5d6a7;text-transform:uppercase;letter-spacing:0.5px;">New DA<br>After Revision</div>
+            <div style="font-size:18px;font-weight:800;color:#fff;" id="newDADisplay">35% − 31% = 4%</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#558b2f;margin-top:6px;">
+          31% DA existing on 01.07.2024 is merged into basic via fitment. Remaining DA = Current DA − 31%.
+        </div>
+      </div>
+
+      <label class="lbl">HRA Zone</label>
+      <select id="hraSelect" onchange="recalc()">
+        <option value="0.10">Corporation / City (10%)</option>
+        <option value="0.08">District HQ Municipality (8%)</option>
+        <option value="0.06">Other Municipality (6%)</option>
+        <option value="0.04">Panchayat Area (4%)</option>
+      </select>
+      <div class="hint">HRA = selected % of Basic Pay</div>
+    </div>
+
+    <!-- Card 3: Deductions & Fitment -->
+    <div class="card">
+      <div class="section-head">🔧 Deductions & Fitment</div>
+
+      <label class="lbl">Pension Scheme</label>
+      <div class="toggle-row" style="margin-bottom:6px">
+        <button class="toggle-btn active" id="npsBtn" onclick="setPension('NPS')">🔵 NPS — New Pension Scheme</button>
+        <button class="toggle-btn" id="opsBtn" onclick="setPension('OPS')">📘 OPS — Old Pension Scheme</button>
+      </div>
+      <div id="pensionHint" style="font-size:11px;color:#5a7a9a;margin-bottom:14px;padding:6px 10px;background:#f0f7ff;border-radius:6px;border-left:3px solid #00509e;">
+        NPS: GPF (compulsory, min 6%) + NPS deduction (10% of Basic+DA) both applicable
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label class="lbl">SLI (₹/mo) — Min 1.5%</label>
+          <input type="number" id="sliInput" placeholder="Auto (1.5%)" oninput="recalc()" />
+          <div class="hint">Leave blank for auto</div>
+        </div>
+        <div>
+          <label class="lbl">GPF (₹/mo) — Min 6% <span style="color:#c00;font-weight:700">*Compulsory</span></label>
+          <input type="number" id="gpfInput" placeholder="Auto (6%)" oninput="recalc()" />
+          <div class="hint">Leave blank for auto (6% of basic)</div>
+        </div>
+      </div>
+
+      <label class="lbl" style="margin-top:14px">12th PRC Fitment Factor</label>
+      <div class="fitment-grid" id="fitmentGrid"></div>
+      <div class="hint" style="margin-top:6px">11th PRC used 1.38×. 12th PRC scenarios: 1.35×, 1.38×, 1.40× (increment also revised by same factor)</div>
+    </div>
+
+  </div><!-- /grid-3 -->
+
+  <!-- RESULTS -->
+  <div id="results" style="display:none">
+
+  <!-- ══ CASH IN HAND HERO ══ -->
+  <div id="cashHero" style="
+    background: linear-gradient(135deg, #003d1a 0%, #005c28 50%, #007a38 100%);
+    border-radius: 16px;
+    padding: 28px 24px 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 6px 32px rgba(0,80,40,.35);
+    position: relative;
+    overflow: hidden;
+  ">
+    <!-- watermark -->
+    <div style="position:absolute;right:-10px;top:-10px;font-size:120px;opacity:.05;line-height:1;pointer-events:none;">💵</div>
+
+    <div style="font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:16px;">
+      💰 Your Estimated Cash in Hand — After 12th Pay Revision
+    </div>
+
+    <!-- Main net pay numbers -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+      <!-- Current net -->
+      <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Now (11th PRC)</div>
+        <div style="font-size:clamp(22px,3.5vw,32px);font-weight:800;color:#aad4ff;" id="heroNet1">—</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:4px;">per month in hand</div>
+      </div>
+      <!-- Arrow -->
+      <div style="text-align:center;color:rgba(255,255,255,.4);font-size:28px;font-weight:300;">→</div>
+      <!-- Revised net -->
+      <div style="background:rgba(255,255,255,.13);border:2px solid rgba(100,255,150,.35);border-radius:12px;padding:16px 18px;text-align:center;box-shadow:0 0 24px rgba(100,255,150,.1);">
+        <div style="font-size:11px;color:rgba(180,255,200,.8);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">After 12th PRC</div>
+        <div style="font-size:clamp(26px,4.5vw,42px);font-weight:800;color:#80ffaa;" id="heroNet2">—</div>
+        <div style="font-size:11px;color:rgba(180,255,200,.6);margin-top:4px;">per month in hand</div>
+      </div>
+    </div>
+
+    <!-- Hike highlight strip -->
+    <div style="background:rgba(255,220,50,.12);border:1px solid rgba(255,220,50,.3);border-radius:10px;padding:14px 18px;display:flex;flex-wrap:wrap;gap:18px;justify-content:space-around;align-items:center;">
+      <div style="text-align:center;">
+        <div style="font-size:10px;color:rgba(255,220,50,.7);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">Monthly Extra</div>
+        <div style="font-size:clamp(20px,3vw,28px);font-weight:800;color:#ffe566;" id="heroHikeMonthly">—</div>
+        <div style="font-size:11px;color:rgba(255,220,50,.6);" id="heroHikePct">more per month</div>
+      </div>
+      <div style="width:1px;height:40px;background:rgba(255,220,50,.2);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:10px;color:rgba(255,220,50,.7);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">Annual Extra</div>
+        <div style="font-size:clamp(18px,2.5vw,24px);font-weight:800;color:#ffe566;" id="heroHikeAnnual">—</div>
+        <div style="font-size:11px;color:rgba(255,220,50,.6);">more per year (in hand)</div>
+      </div>
+      <div style="width:1px;height:40px;background:rgba(255,220,50,.2);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:10px;color:rgba(255,220,50,.7);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px;">Fitment Used</div>
+        <div style="font-size:clamp(18px,2.5vw,24px);font-weight:800;color:#ffe566;" id="heroFitment">—</div>
+        <div style="font-size:11px;color:rgba(255,220,50,.6);">× fitment factor</div>
+      </div>
+    </div>
+
+    <!-- Gross vs deductions footnote -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:rgba(255,255,255,.5);">Gross Pay</span>
+        <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.75);" id="heroGross2">—</span>
+      </div>
+      <div style="background:rgba(255,100,100,.07);border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:11px;color:rgba(255,160,160,.6);">Total Deductions</span>
+        <span style="font-size:13px;font-weight:700;color:rgba(255,160,160,.8);" id="heroDed2">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compact current vs revised strip -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+    <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #dae4f0;box-shadow:0 1px 8px rgba(0,51,102,.06);">
+      <div style="font-size:10px;font-weight:700;color:#00509e;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">📘 Current Pay (11th PRC)</div>
+      <div style="font-size:11px;color:#5a7a9a;margin-bottom:2px;" id="stripSub1"></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#3a5a7a;margin-top:6px;border-top:1px solid #eef3fa;padding-top:6px;">
+        <span>Gross</span><strong id="stripGross1" style="color:#003366"></strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#aa2200;margin-top:3px;">
+        <span>Deductions</span><strong id="stripDed1"></strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;color:#003366;margin-top:6px;border-top:2px solid #c5d8ee;padding-top:6px;">
+        <span>In Hand</span><span id="stripNet1" style="color:#003366"></span>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:10px;padding:14px 16px;border:2px solid #81c784;box-shadow:0 2px 14px rgba(0,100,50,.1);">
+      <div style="font-size:10px;font-weight:700;color:#006633;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">🟢 Estimated (12th PRC)</div>
+      <div style="font-size:11px;color:#5a7a9a;margin-bottom:2px;" id="stripSub2"></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#3a5a7a;margin-top:6px;border-top:1px solid #eef3fa;padding-top:6px;">
+        <span>Gross</span><strong id="stripGross2" style="color:#006633"></strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#aa2200;margin-top:3px;">
+        <span>Deductions</span><strong id="stripDed2"></strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;color:#006633;margin-top:6px;border-top:2px solid #81c784;padding-top:6px;">
+        <span>In Hand</span><span id="stripNet2" style="color:#006633"></span>
+      </div>
+    </div>
+  </div>
+
+    <!-- Detailed Payslip Table -->
+    <div class="card">
+      <div class="section-head">📋 Detailed Pay Comparison (Monthly)</div>
+      <div style="overflow-x:auto">
+        <table class="pay-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;width:36%">Component</th>
+              <th class="col-curr">Current (11th PRC)</th>
+              <th class="col-rev">Estimated (12th PRC)</th>
+              <th class="col-diff">Difference</th>
+            </tr>
+          </thead>
+          <tbody id="payTableBody"></tbody>
+        </table>
+      </div>
+      <div class="hint" style="margin-top:8px">*DA after revision = Current DA (35%) − DA merged at revision (31%) = 4%. As current DA increases, new DA increases proportionally.</div>
+    </div>
+
+    <!-- Scenario Cards -->
+    <div class="card">
+      <div class="section-head">📈 All Fitment Scenarios (Quick Compare)</div>
+      <div class="grid-4" id="scenarioCards"></div>
+    </div>
+
+    <!-- Notes -->
+    <div class="card notes-card">
+      <div class="section-head">📝 Calculation Notes</div>
+      <ul>
+        <li><strong>Current Pay (11th PRC)</strong>: Uses Basic Pay strictly as on 01.07.2024 — no increments added here</li>
+        <li><strong>Revised Basic (12th PRC)</strong>: Basic Pay as on 01.07.2024 × Fitment Factor; increments earned after 01.07.2024 are then added only to this revised basic</li>
+        <li><strong>Revised Increment</strong>: Current Master Scale increment × Fitment Factor, rounded to ₹100 (e.g. ₹700 × 1.38 = ₹900)</li>
+        <li><strong>DA After Revision</strong>: 31% DA existing on 01.07.2024 is merged into basic via fitment. New DA = Current DA − 31% (e.g. 35% − 31% = 4%)</li>
+        <li><strong>SLI</strong> = 1.5% of Basic Pay (actual premium may vary; minimum shown)</li>
+        <li><strong>GIS</strong> = max(₹800, 1.5% of Basic Pay) — Group Insurance Scheme</li>
+        <li><strong>MEDISEP</strong> = ₹589/month fixed (employee contribution)</li>
+        <li><strong>GPF (General Provident Fund)</strong> = Compulsory for ALL employees. If no input given: 6% of Basic Pay. If old contribution entered and it was ≥ 6% of old basic: new GPF = max(old amount, 6% of new basic) — never less than old contribution. If old contribution was &lt; 6% of old basic: fresh 6% of new basic applied.</li>
+        <li><strong>NPS (New Pension Scheme)</strong> = 10% of (Basic + DA) — deducted additionally if employee is under NPS. Government contributes 14% separately</li>
+        <li><strong>Rounding</strong>: Basic Pay and increments are rounded to nearest ₹100 (pay scale convention). DA, HRA, SLI, GIS, NPS amounts are rounded up to the next rupee (ceiling), not to the nearest ₹100.</li>
+        <li style="color:#c00;font-weight:700">⚠ All 12th PRC figures are ESTIMATES only. Official pay scales will be notified via G.O. by Finance Department, Kerala.</li>
+      </ul>
+    </div>
+
+  </div><!-- /results -->
+
+  <!-- Empty State -->
+  <div class="card empty" id="emptyState">
+    <div class="empty-icon">👆</div>
+    <div class="empty-title">Enter your Basic Pay to get started</div>
+    <div class="empty-sub">Enter your Basic Pay as on 01.07.2024 above to see your estimated revised pay</div>
+  </div>
+
+</div><!-- /main -->
+
+<footer>
+  Kerala 12th Pay Revision Estimator &nbsp;•&nbsp; Unofficial Tool for Reference Only<br>
+  For official figures, refer to G.O. issued by Finance Department, Government of Kerala
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA & CONFIG
+═══════════════════════════════════════════════════════ */
+const FITMENT_OPTIONS = [
+  { label: "Scenario A – 1.35×", factor: 1.35 },
+  { label: "Scenario B – 1.38×", factor: 1.38 },
+  { label: "Scenario C – 1.40×", factor: 1.40 },
+];
+
+let selectedIncr    = 0;
+let selectedFitment = 1; // default 1.38×
+let pensionType     = "NPS";
+
+/* ═══════════════════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════════════════ */
+function r100(n){ return Math.round(n / 100) * 100; }  // for basic pay / increments only
+function rup(n) { return Math.ceil(n); }                // round up to next rupee (for all deductions & allowances)
+
+function fmt(n){
+  const abs = Math.abs(Math.round(n));
+  const str = abs.toLocaleString("en-IN");
+  return n < 0 ? `-₹${str}` : `₹${str}`;
+}
+
+function fmtDiff(n){
+  const abs = Math.abs(Math.round(n));
+  const str = abs.toLocaleString("en-IN");
+  if(n > 0)  return `<span style="color:#006633">+₹${str}</span>`;
+  if(n < 0)  return `<span style="color:#c00">-₹${str}</span>`;
+  return `₹0`;
+}
+
+function getMasterIncrement(basic){
+  if(basic < 17700)  return 300;
+  if(basic < 19700)  return 400;
+  if(basic < 22700)  return 500;
+  if(basic < 26300)  return 600;
+  if(basic < 33100)  return 700;
+  if(basic < 41100)  return 800;
+  if(basic < 50100)  return 900;
+  if(basic < 61900)  return 1000;
+  if(basic < 74900)  return 1100;
+  if(basic < 91700)  return 1200;
+  if(basic < 110500) return 1300;
+  if(basic < 131500) return 1400;
+  if(basic < 155500) return 1500;
+  if(basic < 170500) return 1600;
+  return 1700;
+}
+
+// Revised increment = current master scale increment × fitment factor (rounded to nearest 100)
+function getRevisedIncrement(currentBasicAtRevision, fitment){
+  const currentIncr = getMasterIncrement(currentBasicAtRevision);
+  return r100(currentIncr * fitment);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CALCULATE ONE SCENARIO
+═══════════════════════════════════════════════════════ */
+// Current pay: basic as on 01.07.2024 + increments earned after (employee already got these)
+function calcCurrent(basicBase, incr, daP, hraR, sliOverride, gpfOverride){
+  let basic = basicBase;
+  for(let i = 0; i < incr; i++) basic += getMasterIncrement(basic);
+
+  const da  = rup(basic * daP / 100);
+  const hra = rup(basic * hraR);
+  const gross = basic + da + hra;
+
+  const sliMin  = rup(basic * 0.015);
+  const sli     = sliOverride ? Math.max(sliOverride, sliMin) : sliMin;
+  const gis     = Math.max(800, rup(basic * 0.015));
+  const medisep = 589;
+
+  const gpf6pct = rup(basic * 0.06);
+  const gpf     = gpfOverride ? Math.max(gpfOverride, gpf6pct) : gpf6pct;
+
+  const nps     = pensionType === "NPS" ? rup((basic + da) * 0.10) : 0;
+
+  const totalDed = sli + gis + medisep + gpf + nps;
+  const net      = gross - totalDed;
+  return { basic, da, hra, gross, sli, gis, medisep, gpf, gpf6pct, nps, totalDed, net };
+}
+
+function calcRevised(basicBase, incr, revDAP, hraR, fitment, sliOverride, gpfOverride){
+  // Revised basic — keep r100 (pay scale steps are multiples of 100)
+  const rbRaw = r100(basicBase * fitment);
+  let rb = rbRaw;
+  let currentBasicTracker = basicBase;
+  for(let i = 0; i < incr; i++){
+    rb += getRevisedIncrement(currentBasicTracker, fitment);
+    currentBasicTracker += getMasterIncrement(currentBasicTracker);
+    rb = r100(rb);
+  }
+
+  const da  = rup(rb * revDAP / 100);      // ceil to next rupee
+  const hra = rup(rb * hraR);              // ceil to next rupee
+  const gross = rb + da + hra;
+
+  const sliMin  = rup(rb * 0.015);          // ceil to next rupee
+  const sli     = sliOverride ? Math.max(sliOverride, sliMin) : sliMin;
+  const gis     = Math.max(800, rup(rb * 0.015));   // ceil, min 800
+  const medisep = 589;
+
+  // GPF revised logic:
+  //   Case 1 – No override: new GPF = 6% of new basic (standard minimum)
+  //   Case 2 – Override given AND override >= 6% of OLD basic:
+  //             employee was contributing above minimum → new GPF = max(old override, 6% of new basic)
+  //   Case 3 – Override given AND override < 6% of OLD basic:
+  //             employee was below minimum → apply fresh 6% of new basic only
+  const newGpf6pct   = rup(rb * 0.06);
+  const oldGpf6pct   = rup(basicBase * 0.06);
+  let gpf;
+  if(!gpfOverride){
+    gpf = newGpf6pct;                                           // no input → 6% of new basic
+  } else if(gpfOverride >= oldGpf6pct){
+    gpf = Math.max(gpfOverride, newGpf6pct);                   // was above min → carry forward, not less than old
+  } else {
+    gpf = newGpf6pct;                                          // was below min → just 6% of new basic
+  }
+
+  // NPS: ceil to next rupee, only if NPS scheme
+  const nps     = pensionType === "NPS" ? rup((rb + da) * 0.10) : 0;
+
+  const totalDed = sli + gis + medisep + gpf + nps;
+  const net      = gross - totalDed;
+  return { basic: rb, basicBeforeIncr: rbRaw, da, hra, gross, sli, gis, medisep, gpf, nps, totalDed, net };
+}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN RECALC
+═══════════════════════════════════════════════════════ */
+const DA_MERGED = 31; // DA% merged into basic on revision date (01.07.2024)
+
+function recalc(){
+  const basicBase = parseFloat(document.getElementById("basicPay").value) || 0;
+  const daP       = parseFloat(document.getElementById("daSlider").value) || 0;
+  const hraR      = parseFloat(document.getElementById("hraSelect").value);
+  const sliOv     = parseFloat(document.getElementById("sliInput").value) || 0;
+  const gpfOv     = parseFloat(document.getElementById("gpfInput").value) || 0;
+  const fitment   = FITMENT_OPTIONS[selectedFitment].factor;
+
+  // New DA after revision = Current DA − DA merged at revision (min 0)
+  const newDAP    = Math.max(0, daP - DA_MERGED);
+  document.getElementById("newDADisplay").textContent = `${daP}% − ${DA_MERGED}% = ${newDAP}%`;
+
+  const emptyEl   = document.getElementById("emptyState");
+  const resultsEl = document.getElementById("results");
+
+  if(!basicBase){
+    emptyEl.style.display  = "";
+    resultsEl.style.display = "none";
+    return;
+  }
+  emptyEl.style.display  = "none";
+  resultsEl.style.display = "";
+
+  // Current pay: basic as on 01.07.2024 + increments already received
+  const cur = calcCurrent(basicBase, selectedIncr, daP, hraR, sliOv, gpfOv);
+  // Revised pay: fitment applied to 01.07.2024 basic, THEN same increments in new scale
+  const rev = calcRevised(basicBase, selectedIncr, newDAP, hraR, fitment, sliOv, gpfOv);
+
+  /* — Cash in Hand HERO — */
+  const netHike   = rev.net   - cur.net;
+  const grossHike = rev.gross - cur.gross;
+
+  document.getElementById("heroNet1").textContent        = fmt(cur.net);
+  document.getElementById("heroNet2").textContent        = fmt(rev.net);
+  document.getElementById("heroHikeMonthly").textContent = fmt(netHike);
+  document.getElementById("heroHikePct").textContent     = `+${((netHike/cur.net)*100).toFixed(1)}% more per month`;
+  document.getElementById("heroHikeAnnual").textContent  = fmt(netHike * 12);
+  document.getElementById("heroFitment").textContent     = FITMENT_OPTIONS[selectedFitment].factor + "×";
+  document.getElementById("heroGross2").textContent      = fmt(rev.gross);
+  document.getElementById("heroDed2").textContent        = "-" + fmt(rev.totalDed);
+
+  /* — Compact strip cards — */
+  const incrNote = selectedIncr > 0 ? ` (incl. ${selectedIncr} incr.)` : "";
+  document.getElementById("stripSub1").textContent = `Basic: ${fmt(cur.basic)}${incrNote} | DA: ${daP}%`;
+  document.getElementById("stripGross1").textContent = fmt(cur.gross);
+  document.getElementById("stripDed1").textContent   = "-" + fmt(cur.totalDed);
+  document.getElementById("stripNet1").textContent   = fmt(cur.net);
+
+  document.getElementById("stripSub2").textContent = `Revised Basic: ${fmt(rev.basicBeforeIncr)}${selectedIncr > 0 ? ` + ${selectedIncr} incr.` : ""} | DA: ${newDAP}%`;
+  document.getElementById("stripGross2").textContent = fmt(rev.gross);
+  document.getElementById("stripDed2").textContent   = "-" + fmt(rev.totalDed);
+  document.getElementById("stripNet2").textContent   = fmt(rev.net);
+
+  /* — Pay Table — */
+  const tbody = document.getElementById("payTableBody");
+  tbody.innerHTML = `
+    <tr class="row-head"><td colspan="4">▶ EARNINGS</td></tr>
+    <tr>
+      <td style="padding-left:22px">
+        Basic Pay
+        ${selectedIncr > 0
+          ? `<span style="color:#7a9abf;font-size:10px;margin-left:6px">(01.07.2024 base + ${selectedIncr} increment${selectedIncr>1?'s':''})</span>`
+          : `<span style="color:#7a9abf;font-size:10px;margin-left:6px">(as on 01.07.2024)</span>`}
+      </td>
+      <td class="col-curr">${fmt(cur.basic)}</td>
+      <td class="col-rev">${fmt(rev.basic)}</td>
+      <td>${fmtDiff(rev.basic - cur.basic)}</td>
+    </tr>
+    <tr class="row-alt">
+      <td style="padding-left:22px">
+        Dearness Allowance
+        <span style="color:#7a9abf;font-size:10px;margin-left:6px">(${daP}% current → ${newDAP}% after revision*)</span>
+      </td>
+      <td class="col-curr">${fmt(cur.da)}</td>
+      <td class="col-rev">${fmt(rev.da)}</td>
+      <td>${fmtDiff(rev.da - cur.da)}</td>
+    </tr>
+    <tr>
+      <td style="padding-left:22px">House Rent Allowance <span style="color:#7a9abf;font-size:10px">(${(hraR*100).toFixed(0)}%)</span></td>
+      <td class="col-curr">${fmt(cur.hra)}</td>
+      <td class="col-rev">${fmt(rev.hra)}</td>
+      <td>${fmtDiff(rev.hra - cur.hra)}</td>
+    </tr>
+    <tr class="row-subtotal">
+      <td>GROSS EARNINGS</td>
+      <td>${fmt(cur.gross)}</td>
+      <td style="color:var(--green-dark)">${fmt(rev.gross)}</td>
+      <td style="color:#c05000">${fmtDiff(rev.gross - cur.gross)}</td>
+    </tr>
+
+    <tr class="row-ded-head"><td colspan="4">▶ DEDUCTIONS</td></tr>
+    <tr>
+      <td style="padding-left:22px">SLI (1.5% of Basic Pay)</td>
+      <td class="col-ded-curr">-${fmt(cur.sli)}</td>
+      <td class="col-ded-rev">-${fmt(rev.sli)}</td>
+      <td class="col-ded-diff">-${fmt(rev.sli - cur.sli)}</td>
+    </tr>
+    <tr class="row-alt">
+      <td style="padding-left:22px">GIS (1.5% of Basic, min ₹800)</td>
+      <td class="col-ded-curr">-${fmt(cur.gis)}</td>
+      <td class="col-ded-rev">-${fmt(rev.gis)}</td>
+      <td class="col-ded-diff">-${fmt(rev.gis - cur.gis)}</td>
+    </tr>
+    <tr>
+      <td style="padding-left:22px">MEDISEP (Fixed)</td>
+      <td class="col-ded-curr">-${fmt(cur.medisep)}</td>
+      <td class="col-ded-rev">-${fmt(rev.medisep)}</td>
+      <td class="col-ded-diff">₹0</td>
+    </tr>
+    <tr class="row-alt">
+      <td style="padding-left:22px">GPF — General Provident Fund</td>
+      <td class="col-ded-curr">-${fmt(cur.gpf)}</td>
+      <td class="col-ded-rev">-${fmt(rev.gpf)}</td>
+      <td class="col-ded-diff">-${fmt(rev.gpf - cur.gpf)}</td>
+    </tr>
+    ${pensionType === "NPS" ? `
+    <tr>
+      <td style="padding-left:22px">NPS — Employee Contribution <span style="font-size:10px;color:#7a9abf">(10% of Basic+DA)</span></td>
+      <td class="col-ded-curr">-${fmt(cur.nps)}</td>
+      <td class="col-ded-rev">-${fmt(rev.nps)}</td>
+      <td class="col-ded-diff">-${fmt(rev.nps - cur.nps)}</td>
+    </tr>` : ""}
+    <tr class="row-ded-total">
+      <td>TOTAL DEDUCTIONS</td>
+      <td>-${fmt(cur.totalDed)}</td>
+      <td style="color:#aa4400">-${fmt(rev.totalDed)}</td>
+      <td style="color:#663300">-${fmt(rev.totalDed - cur.totalDed)}</td>
+    </tr>
+
+    <tr class="row-net">
+      <td>🟢 NET PAY (In-hand)</td>
+      <td>${fmt(cur.net)}</td>
+      <td style="color:var(--green-dark)">${fmt(rev.net)}</td>
+      <td style="color:#1b5e20">+${fmt(netHike)}</td>
+    </tr>
+  `;
+
+  /* — Scenario Cards — */
+  const scWrap = document.getElementById("scenarioCards");
+  scWrap.innerHTML = "";
+  FITMENT_OPTIONS.forEach((f, i) => {
+    const r = calcRevised(basicBase, selectedIncr, newDAP, hraR, f.factor, sliOv, gpfOv);
+    const hike = r.net - cur.net;
+    const isActive = i === selectedFitment;
+    const card = document.createElement("div");
+    card.className = "scenario-card" + (isActive ? " active" : "");
+    card.onclick = () => { selectedFitment = i; buildFitmentGrid(); recalc(); };
+    card.innerHTML = `
+      <div class="sc-title${isActive ? " active" : ""}">${f.label}</div>
+      <div class="sc-basic">Revised Basic: ${fmt(r.basicBeforeIncr)}${selectedIncr > 0 ? ` + ${selectedIncr} incr. = ${fmt(r.basic)}` : ""}</div>
+      <div class="sc-grid">
+        <div class="sc-cell"><div class="sc-lbl">Gross</div><div class="sc-val${isActive?" active":""}">${fmt(r.gross)}</div></div>
+        <div class="sc-cell"><div class="sc-lbl">Net</div><div class="sc-val${isActive?" active":""}">${fmt(r.net)}</div></div>
+        <div class="sc-cell"><div class="sc-lbl">Deductions</div><div class="sc-val${isActive?" active":""}">${fmt(r.totalDed)}</div></div>
+        <div class="sc-cell"><div class="sc-lbl">Net Hike</div><div class="sc-val${isActive?" active":""}" style="color:var(--green-mid)">+${fmt(hike)}</div></div>
+      </div>
+    `;
+    scWrap.appendChild(card);
+  });
+
+  /* — Increment info — */
+  if(basicBase && selectedIncr > 0){
+    const currIncr = getMasterIncrement(basicBase);
+    const revIncr  = r100(currIncr * fitment);
+    document.getElementById("incrInfo").style.display = "";
+    document.getElementById("incrInfo").innerHTML =
+      `Current Basic (after ${selectedIncr} incr.): <strong>${fmt(cur.basic)}</strong>
+       &nbsp;|&nbsp; Revised Basic (after ${selectedIncr} incr.): <strong style="color:var(--green-mid)">${fmt(rev.basic)}</strong>`;
+  } else {
+    document.getElementById("incrInfo").style.display = "none";
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   UI BUILDERS
+═══════════════════════════════════════════════════════ */
+function buildIncrBtns(){
+  const wrap = document.getElementById("incrBtns");
+  wrap.innerHTML = "";
+  for(let n = 0; n <= 5; n++){
+    const btn = document.createElement("button");
+    btn.className = "incr-btn" + (n === selectedIncr ? " active" : "");
+    btn.textContent = n;
+    btn.onclick = () => {
+      selectedIncr = n;
+      document.getElementById("incrHint").textContent =
+        n === 0 ? "Increments added to both current basic and revised basic"
+                : `${n} increment(s) added to both current (11th PRC) and revised (12th PRC) basic pay`;
+      buildIncrBtns();
+      recalc();
+    };
+    wrap.appendChild(btn);
+  }
+}
+
+function buildFitmentGrid(){
+  const wrap = document.getElementById("fitmentGrid");
+  wrap.innerHTML = "";
+  FITMENT_OPTIONS.forEach((f, i) => {
+    const btn = document.createElement("button");
+    btn.className = "fitment-btn" + (i === selectedFitment ? " active" : "");
+    btn.textContent = f.label;
+    btn.onclick = () => { selectedFitment = i; buildFitmentGrid(); recalc(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function setPension(type){
+  pensionType = type;
+  document.getElementById("npsBtn").className = "toggle-btn" + (type === "NPS" ? " active" : "");
+  document.getElementById("opsBtn").className = "toggle-btn" + (type === "OPS" ? " active" : "");
+  document.getElementById("pensionHint").innerHTML = type === "NPS"
+    ? "NPS: GPF (compulsory, min 6%) + NPS deduction (10% of Basic+DA) both applicable"
+    : "OPS: Only GPF (compulsory, min 6%) deducted — no NPS contribution";
+  recalc();
+}
+
+function syncDA(v){
+  document.getElementById("daVal").textContent  = v + "%";
+  document.getElementById("curDAshow").textContent = v + "%";
+  recalc();
+}
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+buildIncrBtns();
+buildFitmentGrid();
+recalc();
+</script>
+</body>
+</html>
