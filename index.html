@@ -453,6 +453,15 @@
         <span style="font-size:13px;font-weight:700;color:rgba(255,160,160,.8);" id="heroDed2">—</span>
       </div>
     </div>
+    <!-- Save button -->
+    <div style="margin-top:14px;display:flex;align-items:center;gap:12px;">
+      <button onclick="saveResult()" id="saveBtn" style="
+        flex:1;padding:12px 20px;border:2px solid rgba(255,220,50,.4);border-radius:10px;
+        background:rgba(255,220,50,.15);color:#ffe566;font-size:14px;font-weight:700;
+        cursor:pointer;font-family:'Noto Sans',sans-serif;letter-spacing:.3px;
+      ">💾 Save My Result</button>
+      <div id="saveMsg" style="display:none;font-size:12px;color:#80ffaa;font-weight:600;"></div>
+    </div>
   </div>
 
   <!-- Compact current vs revised strip -->
@@ -850,6 +859,20 @@ function recalc(){
   } else {
     document.getElementById("incrInfo").style.display = "none";
   }
+
+  /* — Store for save — */
+  lastCalc = {
+    basicPay:    basicBase,
+    increments:  selectedIncr,
+    da:          daP,
+    hra:         (hraR*100).toFixed(0)+"%",
+    pension:     pensionType,
+    fitment:     fitment+"×",
+    currentNet:  Math.round(cur.net),
+    revisedNet:  Math.round(rev.net),
+    monthlyHike: Math.round(netHike),
+    annualHike:  Math.round(netHike*12)
+  };
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -908,6 +931,44 @@ function syncDA(v){
 buildIncrBtns();
 buildFitmentGrid();
 recalc();
+
+/* ═══════════════════════════════════════════════════════
+   SAVE TO GOOGLE SHEET
+═══════════════════════════════════════════════════════ */
+const SHEET_URL = "https://script.google.com/macros/s/AKfycby81QlqLmGpHg3tqVCy8kIrFyVXDXfrgCBdVaEM-qfUHyicMRv5K-wU4XggTawo2HaI/exec";
+let lastCalc = null;
+
+function saveResult(){
+  if(!lastCalc){ alert("Please enter your Basic Pay first!"); return; }
+  const btn = document.getElementById("saveBtn");
+  const msg = document.getElementById("saveMsg");
+  btn.textContent = "⏳ Saving...";
+  btn.disabled = true;
+
+  fetch(SHEET_URL, {
+    method: "POST",
+    mode:   "no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:   JSON.stringify(lastCalc)
+  })
+  .then(()=>{
+    btn.textContent = "✅ Saved!";
+    msg.style.display = "";
+    msg.textContent = "Result saved to records!";
+    setTimeout(()=>{
+      btn.textContent = "💾 Save My Result";
+      btn.disabled = false;
+      msg.style.display = "none";
+    }, 3000);
+  })
+  .catch(()=>{
+    btn.textContent = "💾 Save My Result";
+    btn.disabled = false;
+    msg.style.display = "";
+    msg.style.color = "#ffaaaa";
+    msg.textContent = "Could not save. Please try again.";
+  });
+}
 </script>
 </body>
 </html>
